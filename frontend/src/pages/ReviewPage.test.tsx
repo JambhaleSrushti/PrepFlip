@@ -146,6 +146,9 @@ describe('review screen', () => {
   })
 
   it('keeps edits and retries when a save fails', async () => {
+    // Typing finishes before the first save, and the error stays on screen until the retry.
+    timing.saveDelayMs = 300
+    timing.retryDelayMs = 300
     let fail = true
     const saves: QuestionSet[] = []
     fakeApi({
