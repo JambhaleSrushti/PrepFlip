@@ -1,13 +1,14 @@
 {
   "name": "prepflip",
-  "version": "0.1.0",
   "private": true,
-  "description": "Turn questions from a PDF or text into an MCQ practice quiz",
-  "type": "module",
+  "description": "Convenience scripts. The front end lives in frontend/ (npm), the API in backend/ (uv).",
   "scripts": {
-    "start": "node --env-file-if-exists=.env server.js"
-  },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.128.0"
+    "setup": "npm --prefix frontend install && uv sync --project backend",
+    "build": "npm --prefix frontend run build",
+    "start": "uv run --project backend prepflip-serve",
+    "dev:api": "uv run --project backend uvicorn prepflip.main:app --reload --port 8000",
+    "dev:web": "npm --prefix frontend run dev",
+    "test": "uv run --project backend pytest backend && npm --prefix frontend test",
+    "hash-password": "uv run --project backend prepflip-hash-password"
   }
 }

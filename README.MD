@@ -1,6 +1,6 @@
 # Question to MCQ Practice
 
-A student-friendly product that turns questions from a PDF or typed text into an interactive multiple-choice quiz. Students can practise in the original question order or shuffle the questions. The product could become an app or a website; that decision is still open.
+A student-friendly product that turns questions from a PDF or typed text into an interactive multiple-choice quiz. Students can practise in the original question order or shuffle the questions. It is a website that works on phones and computers.
 
 ## Features
 
@@ -25,37 +25,69 @@ The interface should look appealing and feel simple to use on both phones and co
 
 ## Project status
 
-This is the initial idea. Requirements may change as the project develops. The technology, final platform, and features such as scoring, timers, explanations, and saved progress have not been decided yet.
-## Running the prototype
+The first version is being built from [`DESIGN.md`](DESIGN.md): a **React** front end, a **Python (FastAPI)** backend, login, and temporary in-memory storage on the server. The original plain-JavaScript prototype is in [`legacy/`](legacy/).
 
-The prototype is a web page served by a small Node.js server, so it works on phones and computers.
+| Milestone | Status |
+|---|---|
+| M0 Repo skeleton | Done |
+| M1 Authentication | In progress |
+| M2–M9 | Not started |
 
-1. `npm install`
-2. Optional, for AI PDF conversion: copy `.env.example` to `.env` and add an `ANTHROPIC_API_KEY`.
-3. `npm start`, then open http://localhost:5173.
+## Development
 
-### How PDFs are converted
-
-- **With an API key:** the PDF is sent to Claude, which reads the pages visually. It keeps only the questions (no headers, page numbers or instructions) and writes maths and chemistry notation as LaTeX, which the page renders with KaTeX. It only fills in an answer when the paper gives one, and flags questions that depend on diagrams or that it could not read clearly. This works on scanned PDFs too.
-- **Without a key:** text is pulled out in the browser with [pdf.js](https://mozilla.github.io/pdf.js/) into the text box, where you remove anything that is not a question. Symbols that cannot be decoded are flagged for review instead of being shown wrongly. Scanned PDFs are not supported this way.
-
-Both need an internet connection (the page loads pdf.js and KaTeX from a CDN).
-
-### Input format the parser understands
+You need [Node.js](https://nodejs.org/) 20+ and [uv](https://docs.astral.sh/uv/) (which installs Python for you).
 
 ```
-1. Question text (can continue on the next line)
-(A) option      or  A) option  or  (1) option  or  all on one line: (A) x (B) y
-(B) option
-Answer: B       (also "Ans:", "Correct answer:", "Key:")
+npm run setup      # install front-end and back-end dependencies
 ```
 
-Questions that are missing an answer, have fewer than two options or have empty options are flagged in the review step. You cannot start the quiz until they are fixed or removed.
+**Day-to-day:** run the API and the front end in two terminals, then open http://localhost:5173. The Vite dev server forwards `/api` to the API.
 
-### Files
+```
+npm run dev:api    # FastAPI on http://127.0.0.1:8000 (reloads on change; docs at /api/docs)
+npm run dev:web    # React on http://localhost:5173
+```
 
-- `index.html` – the screens (input → review → quiz → result)
-- `parser.js` – turns text into MCQs and flags anything unclear
-- `app.js` – UI logic
-- `styles.css` – mobile-first styling with light and dark themes
-- `server.js` – serves the page and the `/api/extract` endpoint that sends PDFs to Claude
+**Production-style run** (one process serves both the built React app and the API, which is what will run on AWS):
+
+```
+npm run build      # build the React app into frontend/dist
+npm start          # serve it and the API on http://127.0.0.1:8000
+```
+
+`npm start` reads `HOST` and `PORT`. It always runs **one worker**: server data lives in memory, so a second worker or instance would have its own separate data.
+
+**Tests:**
+
+```
+npm test           # backend (pytest) and front end (Vitest)
+```
+
+### Configuration
+
+Environment variables read by the backend:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PREPFLIP_USERS_FILE` | `backend/users.json` | Accounts file |
+| `PREPFLIP_STATIC_DIR` | `frontend/dist` | Built React app |
+| `PREPFLIP_SECURE_COOKIES` | `false` | Set to `true` behind HTTPS |
+| `PREPFLIP_SESSION_TTL_HOURS` | `168` | How long a login lasts |
+
+### Project layout
+
+```
+frontend/   React + TypeScript (Vite)
+backend/    FastAPI app
+  prepflip/api/        HTTP routers (validation only, no business logic)
+  prepflip/services/   business logic
+  prepflip/store/      storage interface + in-memory implementation
+  prepflip/models.py   stored entities
+  tests/               pytest
+legacy/     the original prototype
+DESIGN.md   the first-version design
+```
+
+### Docker
+
+The design uses a Docker image for the AWS pilot. Docker isn't used yet: the npm + uv commands above do the same job locally. The Dockerfile will be added with the deployment milestone (M9).

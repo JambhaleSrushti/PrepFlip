@@ -1,0 +1,13 @@
+{
+  "name": "prepflip",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Turn questions from a PDF or text into an MCQ practice quiz",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0"
+  }
+}

@@ -1,0 +1,99 @@
+:root {
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --text: #1c2233;
+  --muted: #667085;
+  --border: #dde2ec;
+  --primary: #3b5bdb;
+  --primary-text: #ffffff;
+  --correct: #2f9e44;
+  --correct-bg: #ebfbee;
+  --wrong: #e03131;
+  --wrong-bg: #fff5f5;
+  --warn: #b35c00;
+  --warn-bg: #fff4e6;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12151d;
+    --card: #1b202b;
+    --text: #e6e9f0;
+    --muted: #98a2b3;
+    --border: #2c3342;
+    --primary: #5c7cfa;
+    --correct: #51cf66;
+    --correct-bg: #16301d;
+    --wrong: #ff6b6b;
+    --wrong-bg: #3a1a1a;
+    --warn: #ffa94d;
+    --warn-bg: #3a2a14;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.topbar h1 { margin: 0; font-size: 1.3rem; color: var(--primary); }
+.topbar .tag { color: var(--muted); font-size: 0.9rem; }
+.topbar .spacer { flex: 1; }
+
+main { max-width: 760px; margin: 0 auto; padding: 16px; }
+h2 { font-size: 1.2rem; margin: 0.5rem 0 1rem; }
+
+.muted { color: var(--muted); font-size: 0.9rem; }
+.center { text-align: center; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+input[type="text"], input[type="password"], textarea {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+
+label.field { display: block; margin-bottom: 0.9rem; }
+label.field span { display: block; font-weight: 600; margin-bottom: 0.3rem; }
+
+button {
+  font: inherit;
+  border-radius: 8px;
+  padding: 0.65rem 1.1rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+}
+button.primary { background: var(--primary); color: var(--primary-text); border-color: var(--primary); font-weight: 600; }
+button.small { padding: 0.3rem 0.7rem; font-size: 0.85rem; }
+button.wide { width: 100%; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.error { background: var(--wrong-bg); color: var(--wrong); border-radius: 8px; padding: 0.5rem 0.8rem; margin: 0 0 0.9rem; }
+.notice { background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 0.5rem 0.8rem; font-size: 0.9rem; }

@@ -1,2 +1,13 @@
 node_modules/
 .env
+
+# Front end build
+frontend/dist/
+
+# Python
+backend/.venv/
+__pycache__/
+.pytest_cache/
+
+# Real accounts (password hashes). See backend/users.example.json.
+backend/users.json
