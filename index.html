@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PrepFlip – MCQ Practice</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>PrepFlip</h1>
+    <span class="tag">MCQ Practice</span>
+  </header>
+
+  <main>
+    <!-- Step 1: input -->
+    <section id="screen-input" class="screen">
+      <h2>1. Add your questions</h2>
+      <div class="card">
+        <label class="upload">
+          <input type="file" id="pdf-input" accept="application/pdf">
+          <span>📄 Upload a PDF</span>
+        </label>
+        <p class="muted center">or paste / type questions below</p>
+        <textarea id="text-input" rows="14" placeholder="1. Which organelle is the powerhouse of the cell?
+(A) Nucleus
+(B) Mitochondria
+(C) Ribosome
+(D) Golgi body
+Answer: B"></textarea>
+        <p id="input-status" class="muted"></p>
+        <div class="row">
+          <button id="btn-sample" class="ghost">Load sample</button>
+          <button id="btn-parse" class="primary">Convert to MCQs →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2: review -->
+    <section id="screen-review" class="screen hidden">
+      <h2>2. Review your MCQs</h2>
+      <p id="review-summary" class="muted"></p>
+      <div id="review-list"></div>
+      <div class="card sticky-actions">
+        <div class="order-choice">
+          <label><input type="radio" name="order" value="original" checked> Original order</label>
+          <label><input type="radio" name="order" value="shuffle"> Shuffle</label>
+        </div>
+        <div class="row">
+          <button id="btn-back" class="ghost">← Back</button>
+          <button id="btn-start" class="primary">Start practising</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: quiz -->
+    <section id="screen-quiz" class="screen hidden">
+      <div class="quiz-head">
+        <span id="quiz-position"></span>
+        <button id="btn-finish" class="ghost small">Finish</button>
+      </div>
+      <div class="progress"><div id="progress-bar"></div></div>
+      <div class="card">
+        <p id="quiz-question" class="question"></p>
+        <div id="quiz-options" class="options"></div>
+      </div>
+      <div class="row">
+        <button id="btn-prev" class="ghost">← Previous</button>
+        <button id="btn-next" class="primary">Next →</button>
+      </div>
+      <div id="palette" class="palette" aria-label="Question navigator"></div>
+    </section>
+
+    <!-- Step 4: result -->
+    <section id="screen-result" class="screen hidden">
+      <h2>Practice complete</h2>
+      <div class="card center">
+        <p id="result-text" class="big"></p>
+        <div class="row">
+          <button id="btn-review-again" class="ghost">Edit questions</button>
+          <button id="btn-restart" class="primary">Practise again</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="parser.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
