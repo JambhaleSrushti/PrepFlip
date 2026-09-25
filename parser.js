@@ -6,6 +6,18 @@
   const OPTION_RE = /^\s*(?:\(([A-Da-d1-4])\)|([A-Da-d])[).:])\s*(.*)$/;
   const ANSWER_RE = /^\s*(?:ans(?:wer)?|correct(?:\s+answer)?|key)\s*[:.\-]?\s*\(?([A-Da-d1-4])\)?/i;
   const INLINE_OPTION_SPLIT = /\s(?=\([A-Da-d1-4]\)\s)/;
+  // Replacement char, private-use glyphs (custom PDF fonts) and stray control chars.
+  const UNREADABLE_RE = /[�-\u0000-\u0008\u000B\u000C\u000E-\u001F]/;
+  const LIGATURES = { "ﬀ": "ff", "ﬁ": "fi", "ﬂ": "fl", "ﬃ": "ffi", "ﬄ": "ffl", "ﬅ": "st", "ﬆ": "st" };
+
+  // Tidy text pulled out of a PDF without touching real symbols (², α, → stay as they are).
+  function cleanPdfText(text) {
+    return text
+      .replace(/[ﬀ-ﬆ]/g, (c) => LIGATURES[c])
+      .replace(/­/g, "") // soft hyphens
+      .replace(/[‐‑]/g, "-")
+      .replace(/[ \t ]+/g, " ");
+  }
 
   function optionIndex(label) {
     const l = label.toUpperCase();
@@ -69,6 +81,9 @@
       if (!q.options[i].trim()) q.issues.push(`Option ${String.fromCharCode(65 + i)} is empty — fill it in or remove it.`);
     }
     if (!q.question.trim()) q.issues.push("Question text is empty.");
+    if (q.aiFlag) q.issues.push(q.aiFlag);
+    if ([q.question, ...q.options].some((t) => UNREADABLE_RE.test(t)))
+      q.issues.push("Some symbols couldn't be read from the PDF (shown as □ or �). Check them against the original and fix them.");
     if (q.options.filter((o) => o.trim()).length < 2) q.issues.push("Needs at least 2 answer options.");
     if (q.answer === null) q.issues.push("Correct answer not found — please select it.");
     else if (q.answer >= q.options.length || !q.options[q.answer]?.trim())
@@ -76,6 +91,6 @@
     return q;
   }
 
-  global.MCQParser = { parse, validate };
-  if (typeof module !== "undefined") module.exports = { parse, validate };
+  global.MCQParser = { parse, validate, cleanPdfText };
+  if (typeof module !== "undefined") module.exports = { parse, validate, cleanPdfText };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -28,10 +28,18 @@ The interface should look appealing and feel simple to use on both phones and co
 This is the initial idea. Requirements may change as the project develops. The technology, final platform, and features such as scoring, timers, explanations, and saved progress have not been decided yet.
 ## Running the prototype
 
-The first prototype is a static web page with no build step, so it works on phones and computers.
+The prototype is a web page served by a small Node.js server, so it works on phones and computers.
 
-- Open `index.html` in a browser, or serve the folder (for example `npx serve .`) and open it on your phone over the same network.
-- PDF text extraction uses [pdf.js](https://mozilla.github.io/pdf.js/) from a CDN, so it needs an internet connection. Scanned (image-only) PDFs are not supported yet.
+1. `npm install`
+2. Optional, for AI PDF conversion: copy `.env.example` to `.env` and add an `ANTHROPIC_API_KEY`.
+3. `npm start`, then open http://localhost:5173.
+
+### How PDFs are converted
+
+- **With an API key:** the PDF is sent to Claude, which reads the pages visually. It keeps only the questions (no headers, page numbers or instructions) and writes maths and chemistry notation as LaTeX, which the page renders with KaTeX. It only fills in an answer when the paper gives one, and flags questions that depend on diagrams or that it could not read clearly. This works on scanned PDFs too.
+- **Without a key:** text is pulled out in the browser with [pdf.js](https://mozilla.github.io/pdf.js/) into the text box, where you remove anything that is not a question. Symbols that cannot be decoded are flagged for review instead of being shown wrongly. Scanned PDFs are not supported this way.
+
+Both need an internet connection (the page loads pdf.js and KaTeX from a CDN).
 
 ### Input format the parser understands
 
@@ -50,3 +58,4 @@ Questions that are missing an answer, have fewer than two options or have empty 
 - `parser.js` – turns text into MCQs and flags anything unclear
 - `app.js` – UI logic
 - `styles.css` – mobile-first styling with light and dark themes
+- `server.js` – serves the page and the `/api/extract` endpoint that sends PDFs to Claude

@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PrepFlip – MCQ Practice</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,6 +21,7 @@
         <label class="upload">
           <input type="file" id="pdf-input" accept="application/pdf">
           <span>📄 Upload a PDF</span>
+          <small id="ai-badge" class="muted"></small>
         </label>
         <p class="muted center">or paste / type questions below</p>
         <textarea id="text-input" rows="14" placeholder="1. Which organelle is the powerhouse of the cell?
@@ -84,7 +86,9 @@ Answer: B"></textarea>
     </section>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
   <script src="parser.js"></script>
   <script src="app.js"></script>
 </body>

@@ -54,34 +54,103 @@ function el(tag, attrs = {}, ...children) {
 
 $("btn-sample").onclick = () => { $("text-input").value = SAMPLE; };
 
+// AI conversion needs the Node server (npm start) with an API key.
+let aiAvailable = false;
+fetch("api/status")
+  .then((r) => r.json())
+  .then((s) => { aiAvailable = s.ai; })
+  .catch(() => {})
+  .finally(() => {
+    $("ai-badge").textContent = aiAvailable
+      ? "AI picks out the questions and keeps symbols intact"
+      : "Basic text extraction (AI not set up)";
+  });
+
 $("pdf-input").onchange = async (e) => {
   const file = e.target.files[0];
+  e.target.value = ""; // allow re-uploading the same file
   if (!file) return;
   const status = $("input-status");
+  const upload = document.querySelector(".upload");
+  upload.classList.add("busy");
+  try {
+    if (aiAvailable) await convertPdfWithAI(file, status);
+    else await extractPdfText(file, status);
+  } finally {
+    upload.classList.remove("busy");
+  }
+};
+
+async function convertPdfWithAI(file, status) {
+  status.textContent = `Reading ${file.name} with AI… this can take a minute for long papers.`;
+  let res, body;
+  try {
+    res = await fetch("api/extract", { method: "POST", headers: { "Content-Type": "application/pdf" }, body: file });
+    body = await res.json();
+  } catch {
+    status.textContent = "Couldn't reach the server. Check it's still running, then try again.";
+    return;
+  }
+  if (!res.ok) { status.textContent = body.error; return; }
+  if (!body.questions.length) { status.textContent = "No multiple-choice questions were found in that PDF."; return; }
+
+  state.questions = body.questions.map((q) => MCQParser.validate({
+    question: q.question,
+    options: q.options,
+    answer: q.answer_index !== null && q.answer_index < q.options.length ? q.answer_index : null,
+    aiFlag: q.needs_review ? q.review_reason || "The AI wasn't sure it read this question correctly." : null,
+    notes: [],
+  }));
+  status.textContent = "";
+  renderReview();
+  show("review");
+}
+
+async function extractPdfText(file, status) {
   if (!window.pdfjsLib) {
     status.textContent = "PDF reader couldn't load (are you offline?). Paste the text instead.";
     return;
   }
   status.textContent = `Reading ${file.name}…`;
+  const PDFJS = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/";
   try {
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "build/pdf.worker.min.js";
+    const pdf = await pdfjsLib.getDocument({
+      data: await file.arrayBuffer(),
+      // Character maps and standard fonts let pdf.js decode symbols it would otherwise drop.
+      cMapUrl: PDFJS + "cmaps/",
+      cMapPacked: true,
+      standardFontDataUrl: PDFJS + "standard_fonts/",
+    }).promise;
     let text = "";
     for (let p = 1; p <= pdf.numPages; p++) {
       const content = await (await pdf.getPage(p)).getTextContent();
       text += content.items.map((it) => it.str + (it.hasEOL ? "\n" : "")).join("") + "\n";
     }
     if (!text.trim()) {
-      status.textContent = "No text found — this PDF may be a scanned image. Scanned PDFs aren't supported yet.";
+      status.textContent = "No text found — this PDF may be a scanned image. Scanned PDFs need the AI option.";
       return;
     }
-    $("text-input").value = text.trim();
-    status.textContent = `Extracted text from ${pdf.numPages} page(s). Check it below, then convert.`;
+    $("text-input").value = MCQParser.cleanPdfText(text).trim();
+    status.textContent = `Extracted text from ${pdf.numPages} page(s). Remove anything that isn't a question, then convert.`;
   } catch (err) {
     status.textContent = `Couldn't read that PDF: ${err.message}`;
   }
-};
+}
+
+// Renders $…$ LaTeX (maths, chemistry, symbols) inside a node. No-op if KaTeX didn't load.
+function renderMath(node) {
+  if (!window.renderMathInElement) return node;
+  renderMathInElement(node, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "$", right: "$", display: false },
+      { left: "\\(", right: "\\)", display: false },
+    ],
+    throwOnError: false,
+  });
+  return node;
+}
 
 $("btn-parse").onclick = () => {
   const text = $("text-input").value;
@@ -141,10 +210,19 @@ function reviewCard(q, qi) {
     opts.append(el("button", { class: "ghost small", onclick: () => { q.options.push(""); refresh(); } }, "+ Add option"));
   }
 
-  card.append(head, qText, opts);
+  // How the question will look in the quiz, with symbols rendered.
+  const preview = renderMath(el("div", { class: "preview" },
+    el("p", {}, q.question),
+    el("ol", { type: "A" }, ...q.options.map((o) => el("li", {}, o)))));
+
+  card.append(head, preview, qText, opts);
   if (q.issues.length) {
     card.classList.add("has-issues");
     card.append(el("ul", { class: "issues" }, ...q.issues.map((i) => el("li", {}, "⚠ " + i))));
+    if (q.aiFlag) {
+      card.append(el("button", { class: "ghost small", onclick: () => { q.aiFlag = null; refresh(); } },
+        "✓ I've checked it, looks right"));
+    }
   }
   if (q.notes?.length) {
     card.append(el("ul", { class: "notes" }, ...q.notes.map((n) => el("li", {}, n))));
@@ -189,6 +267,7 @@ function renderQuiz() {
   $("quiz-position").textContent = `Question ${state.current + 1} of ${total}`;
   $("progress-bar").style.width = `${((state.current + 1) / total) * 100}%`;
   $("quiz-question").textContent = q.question;
+  renderMath($("quiz-question"));
 
   const options = $("quiz-options");
   options.replaceChildren();
@@ -205,7 +284,7 @@ function renderQuiz() {
         state.responses[qi] = oi;
         renderQuiz();
       },
-    }, el("span", { class: "letter" }, LETTERS[oi]), el("span", {}, opt)));
+    }, el("span", { class: "letter" }, LETTERS[oi]), renderMath(el("span", {}, opt))));
   });
 
   $("btn-prev").disabled = state.current === 0;
