@@ -2,7 +2,9 @@ import { Link, Navigate, Route, Routes, useLocation } from 'react-router'
 import { useAuth } from './auth'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
+import ImportPage from './pages/ImportPage'
 import LoginPage from './pages/LoginPage'
+import ReviewPage from './pages/ReviewPage'
 
 /** Sends logged-out visitors to /login, remembering where they were going. */
 function RequireAuth() {
@@ -36,6 +38,8 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route element={<RequireAuth />}>
         <Route index element={<HomePage />} />
+        <Route path="import" element={<ImportPage />} />
+        <Route path="sets/:id" element={<ReviewPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

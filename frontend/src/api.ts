@@ -1,6 +1,8 @@
 // Thin wrapper around fetch for the JSON API. The session lives in an HttpOnly cookie,
 // so the browser sends it automatically and scripts never see it.
 
+import type { AnswerKeyResult, QuestionSet, SetSummary } from './types'
+
 export type User = {
   id: string
   username: string
@@ -52,4 +54,18 @@ export const api = {
   login: (username: string, password: string) => request<User>('POST', '/auth/login', { username, password }),
   logout: () => request<void>('POST', '/auth/logout'),
   me: () => request<User>('GET', '/auth/me'),
+
+  importText: (body: { text: string; answer_key?: string; title?: string }) =>
+    request<QuestionSet>('POST', '/imports/text', body),
+  listSets: () => request<SetSummary[]>('GET', '/sets'),
+  getSet: (id: string) => request<QuestionSet>('GET', `/sets/${id}`),
+  saveSet: (set: Pick<QuestionSet, 'id' | 'title' | 'questions' | 'source'>) =>
+    request<QuestionSet>('PUT', `/sets/${set.id}`, {
+      title: set.title.trim() || 'Untitled set',
+      source: set.source,
+      // Issues are worked out by the server; don't send stale ones back.
+      questions: set.questions.map((q) => ({ ...q, issues: [] })),
+    }),
+  deleteSet: (id: string) => request<void>('DELETE', `/sets/${id}`),
+  applyAnswerKey: (id: string, text: string) => request<AnswerKeyResult>('POST', `/sets/${id}/answer-key`, { text }),
 }

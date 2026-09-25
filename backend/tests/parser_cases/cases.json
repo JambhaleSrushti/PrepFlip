@@ -1,0 +1,21 @@
+{
+  "sample": "1. Which organelle is known as the powerhouse of the cell?\n(A) Nucleus\n(B) Mitochondria\n(C) Ribosome\n(D) Golgi body\nAnswer: B\n\n2. The SI unit of electric charge is\n(1) Volt (2) Ampere (3) Coulomb (4) Ohm\nAnswer: 3\n\n3. What is the chemical formula of water?\nA) H2O2\nB) HO\nC) H2O\nD) OH\nAnswer: C\n\n4. Which of the following is a noble gas?\n(A) Nitrogen\n(B) Argon\n(C) Oxygen",
+  "question_number_styles": "Q1. First question\n(A) a1\n(B) b1\nAns: A\nQuestion 2) Second question\n(A) a2\n(B) b2\nAns: B\n3: Third question\n(A) a3\n(B) b3\nAns: A\nQ 4 : Fourth question\n(A) a4\n(B) b4\nAns. B",
+  "inline_letter_options": "1. Pick one\n(A) alpha (B) beta (C) gamma (D) delta\nAnswer: D",
+  "lowercase_options_and_answer": "1. Lower case\na) one\nb) two\nc. three\nd: four\ncorrect answer: c",
+  "key_and_bracket_answers": "1. First\n(A) x\n(B) y\nKey: (2)\n2. Second\n(A) x\n(B) y\nCorrect answer - A",
+  "continuation_lines": "1. A question that is long\nand continues here\n(A) an option that\nwraps onto a new line\n(B) short\nAnswer: A",
+  "missing_middle_option": "1. Gap in options\n(A) one\n(B) two\n(D) four\nAnswer: A",
+  "duplicate_option_letter": "1. Repeated letter\n(A) first A\n(B) b\n(A) second A\nAnswer: B",
+  "single_option": "1. Only one option\n(A) lonely\nAnswer: A",
+  "answer_beyond_options": "1. Three options\n(A) a\n(B) b\n(C) c\nAns: D",
+  "answer_points_to_empty_option": "1. Empty target\n(A) a\n(B)\n(C) c\nAnswer: B",
+  "unnumbered_first_question": "What is 2 + 2?\n(A) 3\n(B) 4\nAnswer: B\n2. Next\n(A) x\n(B) y\nAnswer: A",
+  "unreadable_symbols": "1. Find the value of  in the circuit\n(A) 1 �\n(B) 2\nAnswer: A",
+  "headers_after_answer_are_dropped": "1. First\n(A) a\n(B) b\nAnswer: A\nNEET 2024 | Page 1\nPhysics Section\n2. Second\n(A) a\n(B) b\nAnswer: B",
+  "missing_answer": "1. No answer given\n(A) a\n(B) b\n(C) c\n(D) d",
+  "crlf_line_endings": "1. Windows text\r\n(A) a\r\n(B) b\r\nAnswer: B\r\n",
+  "latex_math": "1. If $x^2 = 4$ and $x > 0$, find $x$.\n(A) $1$\n(B) $2$\n(C) $sqrt{2}$\n(D) $4$\nAnswer: B",
+  "answer_word_in_question_text": "Answer all questions carefully.\n1. What is 1 + 1?\n(A) 1\n(B) 2\nAnswer: B",
+  "answer_word_after_a_question": "1. First\n(A) a\n(B) b\nAnswer: B\nAnswer all questions in Section B.\n2. Second\n(A) a\n(B) b\nAnswer: A"
+}

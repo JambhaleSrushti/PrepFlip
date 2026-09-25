@@ -6,7 +6,7 @@ package changes when Postgres is added; the rest of the app uses `Store`.
 
 from typing import Any, Generic, Protocol, TypeVar
 
-from prepflip.models import Document, Session, User
+from prepflip.models import Document, QuestionSet, Session, User
 
 from .memory import InMemoryStore
 
@@ -30,6 +30,7 @@ class Collection(Protocol, Generic[T]):
 class Store(Protocol):
     users: Collection[User]
     sessions: Collection[Session]
+    sets: Collection[QuestionSet]
 
 
 __all__ = ["Collection", "Store", "InMemoryStore"]

@@ -1,0 +1,372 @@
+{
+  "sample": [
+    {
+      "text": "Which organelle is known as the powerhouse of the cell?",
+      "options": [
+        "Nucleus",
+        "Mitochondria",
+        "Ribosome",
+        "Golgi body"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "The SI unit of electric charge is",
+      "options": [
+        "Volt",
+        "Ampere",
+        "Coulomb",
+        "Ohm"
+      ],
+      "answer_index": 2,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "What is the chemical formula of water?",
+      "options": [
+        "H2O2",
+        "HO",
+        "H2O",
+        "OH"
+      ],
+      "answer_index": 2,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "Which of the following is a noble gas?",
+      "options": [
+        "Nitrogen",
+        "Argon",
+        "Oxygen"
+      ],
+      "answer_index": null,
+      "codes": [
+        "MISSING_ANSWER"
+      ],
+      "notes": 0
+    }
+  ],
+  "question_number_styles": [
+    {
+      "text": "First question",
+      "options": [
+        "a1",
+        "b1"
+      ],
+      "answer_index": 0,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "Second question",
+      "options": [
+        "a2",
+        "b2"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "Third question",
+      "options": [
+        "a3",
+        "b3"
+      ],
+      "answer_index": 0,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "Fourth question",
+      "options": [
+        "a4",
+        "b4"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "inline_letter_options": [
+    {
+      "text": "Pick one",
+      "options": [
+        "alpha",
+        "beta",
+        "gamma",
+        "delta"
+      ],
+      "answer_index": 3,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "lowercase_options_and_answer": [
+    {
+      "text": "Lower case",
+      "options": [
+        "one",
+        "two",
+        "three",
+        "four"
+      ],
+      "answer_index": 2,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "key_and_bracket_answers": [
+    {
+      "text": "First",
+      "options": [
+        "x",
+        "y"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "Second",
+      "options": [
+        "x",
+        "y"
+      ],
+      "answer_index": 0,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "continuation_lines": [
+    {
+      "text": "A question that is long and continues here",
+      "options": [
+        "an option that wraps onto a new line",
+        "short"
+      ],
+      "answer_index": 0,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "missing_middle_option": [
+    {
+      "text": "Gap in options",
+      "options": [
+        "one",
+        "two",
+        "",
+        "four"
+      ],
+      "answer_index": 0,
+      "codes": [
+        "EMPTY_OPTION"
+      ],
+      "notes": 0
+    }
+  ],
+  "duplicate_option_letter": [
+    {
+      "text": "Repeated letter",
+      "options": [
+        "second A",
+        "b"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 1
+    }
+  ],
+  "single_option": [
+    {
+      "text": "Only one option",
+      "options": [
+        "lonely"
+      ],
+      "answer_index": 0,
+      "codes": [
+        "FEW_OPTIONS"
+      ],
+      "notes": 0
+    }
+  ],
+  "answer_beyond_options": [
+    {
+      "text": "Three options",
+      "options": [
+        "a",
+        "b",
+        "c"
+      ],
+      "answer_index": null,
+      "codes": [
+        "MISSING_ANSWER"
+      ],
+      "notes": 0
+    }
+  ],
+  "answer_points_to_empty_option": [
+    {
+      "text": "Empty target",
+      "options": [
+        "a",
+        "",
+        "c"
+      ],
+      "answer_index": 1,
+      "codes": [
+        "EMPTY_OPTION"
+      ],
+      "notes": 0
+    }
+  ],
+  "unnumbered_first_question": [
+    {
+      "text": "What is 2 + 2?",
+      "options": [
+        "3",
+        "4"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "Next",
+      "options": [
+        "x",
+        "y"
+      ],
+      "answer_index": 0,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "unreadable_symbols": [
+    {
+      "text": "Find the value of  in the circuit",
+      "options": [
+        "1 �",
+        "2"
+      ],
+      "answer_index": 0,
+      "codes": [
+        "UNREADABLE_CHARS"
+      ],
+      "notes": 0
+    }
+  ],
+  "headers_after_answer_are_dropped": [
+    {
+      "text": "First",
+      "options": [
+        "a",
+        "b"
+      ],
+      "answer_index": 0,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "Second",
+      "options": [
+        "a",
+        "b"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "missing_answer": [
+    {
+      "text": "No answer given",
+      "options": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "answer_index": null,
+      "codes": [
+        "MISSING_ANSWER"
+      ],
+      "notes": 0
+    }
+  ],
+  "crlf_line_endings": [
+    {
+      "text": "Windows text",
+      "options": [
+        "a",
+        "b"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "latex_math": [
+    {
+      "text": "If $x^2 = 4$ and $x > 0$, find $x$.",
+      "options": [
+        "$1$",
+        "$2$",
+        "$sqrt{2}$",
+        "$4$"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "answer_word_in_question_text": [
+    {
+      "text": "Answer all questions carefully.",
+      "options": [],
+      "answer_index": null,
+      "codes": [
+        "FEW_OPTIONS",
+        "MISSING_ANSWER"
+      ],
+      "notes": 0
+    },
+    {
+      "text": "What is 1 + 1?",
+      "options": [
+        "1",
+        "2"
+      ],
+      "answer_index": 1,
+      "codes": [],
+      "notes": 0
+    }
+  ],
+  "answer_word_after_a_question": [
+    {
+      "text": "First",
+      "options": [
+        "a",
+        "b"
+      ],
+      "answer_index": 0,
+      "codes": [],
+      "notes": 0
+    },
+    {
+      "text": "Second",
+      "options": [
+        "a",
+        "b"
+      ],
+      "answer_index": 0,
+      "codes": [],
+      "notes": 0
+    }
+  ]
+}
