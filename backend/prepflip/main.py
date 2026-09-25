@@ -2,22 +2,33 @@
 
 from pathlib import Path
 
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
-from prepflip.api import health
+from prepflip.api import auth, health
+from prepflip.api.deps import current_user
 from prepflip.config import Settings
+from prepflip.services.auth import LoginRateLimiter, load_users
 from prepflip.store import InMemoryStore, Store
 
 
 def create_app(settings: Settings | None = None, store: Store | None = None) -> FastAPI:
     settings = settings or Settings.from_env()
+    store = store or InMemoryStore()
+    load_users(settings.users_file, store)
+
     app = FastAPI(title="PrepFlip API", docs_url="/api/docs", openapi_url="/api/openapi.json", redoc_url=None)
     app.state.settings = settings
-    app.state.store = store or InMemoryStore()
+    app.state.store = store
+    app.state.login_limiter = LoginRateLimiter(settings.login_max_failures, settings.login_window_seconds)
 
     api = APIRouter(prefix="/api")
-    api.include_router(health.router)
+    # Public: health check and login. Everything else requires a session.
+    api.include_router(health.public_router)
+    api.include_router(auth.router)
+    protected = APIRouter(dependencies=[Depends(current_user)])
+    protected.include_router(health.router)
+    api.include_router(protected)
     app.include_router(api)
 
     @app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], include_in_schema=False)

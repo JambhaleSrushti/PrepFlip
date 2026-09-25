@@ -14,6 +14,12 @@ class Document(BaseModel):
     id: str
 
 
+class OwnedDocument(Document):
+    """A document that belongs to one user. Other users get 404 for it (see api.deps.get_owned)."""
+
+    owner_id: str
+
+
 class User(Document):
     username: str
     password_hash: str  # argon2

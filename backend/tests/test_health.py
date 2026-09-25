@@ -12,8 +12,8 @@ def test_health(client: TestClient) -> None:
     assert res.json() == {"status": "ok"}
 
 
-def test_config_reports_ai_off(client: TestClient) -> None:
-    assert client.get("/api/config").json()["ai_enabled"] is False
+def test_config_reports_ai_off(asha: TestClient) -> None:
+    assert asha.get("/api/config").json()["ai_enabled"] is False
 
 
 def test_unknown_api_path_is_json_404_not_the_spa(client: TestClient) -> None:

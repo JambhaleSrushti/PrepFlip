@@ -1,32 +1,43 @@
-import { useEffect, useState } from 'react'
+import { Link, Navigate, Route, Routes, useLocation } from 'react-router'
+import { useAuth } from './auth'
+import Layout from './components/Layout'
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
 
-type ApiStatus = 'checking' | 'ok' | 'down'
+/** Sends logged-out visitors to /login, remembering where they were going. */
+function RequireAuth() {
+  const { user } = useAuth()
+  const location = useLocation()
+  if (user === undefined) {
+    return (
+      <p className="muted center" role="status">
+        Loading…
+      </p>
+    )
+  }
+  if (user === null) {
+    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
+  }
+  return <Layout />
+}
+
+function NotFound() {
+  return (
+    <div className="card center">
+      <p>That page doesn't exist.</p>
+      <Link to="/">Go to your question sets</Link>
+    </div>
+  )
+}
 
 export default function App() {
-  const [api, setApi] = useState<ApiStatus>('checking')
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((res) => setApi(res.ok ? 'ok' : 'down'))
-      .catch(() => setApi('down'))
-  }, [])
-
   return (
-    <>
-      <header className="topbar">
-        <h1>PrepFlip</h1>
-        <span className="tag">NEET MCQ Practice</span>
-      </header>
-      <main>
-        <div className="card center">
-          <p>Practise NEET questions from your own papers.</p>
-          <p className="muted" role="status">
-            {api === 'checking' && 'Connecting to the server…'}
-            {api === 'ok' && 'Server connected.'}
-            {api === 'down' && 'Cannot reach the server.'}
-          </p>
-        </div>
-      </main>
-    </>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route element={<RequireAuth />}>
+        <Route index element={<HomePage />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   )
 }

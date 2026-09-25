@@ -30,7 +30,7 @@ The first version is being built from [`DESIGN.md`](DESIGN.md): a **React** fron
 | Milestone | Status |
 |---|---|
 | M0 Repo skeleton | Done |
-| M1 Authentication | In progress |
+| M1 Authentication | Done |
 | M2–M9 | Not started |
 
 ## Development
@@ -40,6 +40,14 @@ You need [Node.js](https://nodejs.org/) 20+ and [uv](https://docs.astral.sh/uv/)
 ```
 npm run setup      # install front-end and back-end dependencies
 ```
+
+**Accounts:** there is no sign-up yet (server storage is temporary, so sign-ups would vanish on restart). Accounts live in `backend/users.json`, which git ignores. Create one with:
+
+```
+npm run hash-password -- --add asha --name "Asha K"   # asks for the password twice
+```
+
+Restart the server after changing accounts. `backend/users.example.json` shows the file format.
 
 **Day-to-day:** run the API and the front end in two terminals, then open http://localhost:5173. The Vite dev server forwards `/api` to the API.
 

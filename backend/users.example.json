@@ -1,0 +1,10 @@
+{
+  "users": [
+    {
+      "id": "3f1c2d4e-0000-4000-8000-000000000001",
+      "username": "asha",
+      "password_hash": "replace with the output of: npm run hash-password",
+      "display_name": "Asha K"
+    }
+  ]
+}

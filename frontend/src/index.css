@@ -97,3 +97,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .error { background: var(--wrong-bg); color: var(--wrong); border-radius: 8px; padding: 0.5rem 0.8rem; margin: 0 0 0.9rem; }
 .notice { background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 0.5rem 0.8rem; font-size: 0.9rem; }
+
+main.narrow { max-width: 420px; }
+.topbar h1 a { color: inherit; text-decoration: none; }
+@media (max-width: 480px) {
+  .topbar .tag, .topbar .user-name { display: none; }
+}
