@@ -4,6 +4,8 @@ import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import ImportPage from './pages/ImportPage'
 import LoginPage from './pages/LoginPage'
+import QuizPage from './pages/QuizPage'
+import ResultPage from './pages/ResultPage'
 import ReviewPage from './pages/ReviewPage'
 
 /** Sends logged-out visitors to /login, remembering where they were going. */
@@ -40,6 +42,8 @@ export default function App() {
         <Route index element={<HomePage />} />
         <Route path="import" element={<ImportPage />} />
         <Route path="sets/:id" element={<ReviewPage />} />
+        <Route path="attempts/:id" element={<QuizPage />} />
+        <Route path="attempts/:id/result" element={<ResultPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

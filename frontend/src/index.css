@@ -158,3 +158,56 @@ code { background: var(--bg); border-radius: 4px; padding: 0 0.25rem; }
   font-size: 0.9rem;
 }
 .katex { font-size: 1.05em; }
+
+/* Start practice */
+.start-practice { display: grid; gap: 0.6rem; margin-bottom: 0.8rem; }
+.choice-group { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; }
+.choice-group legend { font-weight: 600; margin-bottom: 0.2rem; padding: 0; }
+.delete-row { justify-content: flex-end; }
+
+/* Quiz */
+.quiz-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.progress { height: 6px; background: var(--border); border-radius: 3px; margin: 0.6rem 0 1rem; overflow: hidden; }
+.progress > div { height: 100%; background: var(--primary); transition: width 0.2s; }
+.question-meta { margin: 0 0 0.4rem; }
+.question { font-size: 1.1rem; font-weight: 500; margin: 0 0 1rem; white-space: pre-wrap; }
+.options { display: grid; gap: 0.6rem; }
+.option { display: flex; align-items: center; gap: 0.75rem; text-align: left; padding: 0.8rem; width: 100%; }
+.option:hover:not([aria-disabled="true"]) { border-color: var(--primary); }
+.option[aria-disabled="true"] { cursor: default; }
+.option.correct { border-color: var(--correct); background: var(--correct-bg); }
+.option.correct .letter { background: var(--correct); color: #fff; border-color: var(--correct); }
+.option.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+.option.wrong .letter { background: var(--wrong); color: #fff; border-color: var(--wrong); }
+.feedback { font-weight: 600; margin: 1rem 0 0; }
+.feedback.correct { color: var(--correct); }
+.feedback.wrong { color: var(--wrong); }
+.explanation { background: var(--bg); border-radius: 8px; padding: 0.6rem 0.9rem; margin: 0.8rem 0 0; }
+.palette { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.2rem; }
+.pal { width: 2.4rem; height: 2.4rem; padding: 0; font-size: 0.85rem; }
+.pal.correct { background: var(--correct); color: #fff; border-color: var(--correct); }
+.pal.wrong { background: var(--wrong); color: #fff; border-color: var(--wrong); }
+.pal.seen { border-color: var(--muted); border-style: dashed; }
+.pal[aria-current] { outline: 2px solid var(--primary); outline-offset: 2px; }
+.sync-state { margin-top: 0.8rem; font-size: 0.8rem; }
+
+/* Result */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 0.6rem; }
+.stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem; text-align: center; }
+.stat strong { display: block; font-size: 1.6rem; }
+.stat.correct strong { color: var(--correct); }
+.stat.wrong strong { color: var(--wrong); }
+.stat.skipped strong { color: var(--muted); }
+.actions-row { margin: 1rem 0 1.5rem; }
+.filter-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.filter-tabs button[aria-pressed="true"] { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+.badge.correct { background: var(--correct-bg); color: var(--correct); }
+.badge.wrong { background: var(--wrong-bg); color: var(--wrong); }
+.badge.skipped { background: var(--bg); color: var(--muted); }
+.result-options { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+.result-options li { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; padding: 0.3rem 0.4rem; border-radius: 8px; }
+.result-options li.is-answer { background: var(--correct-bg); }
+.result-options li.is-answer .letter { background: var(--correct); color: #fff; border-color: var(--correct); }
+.result-options li.is-wrong-choice { background: var(--wrong-bg); }
+.result-options li.is-wrong-choice .letter { background: var(--wrong); color: #fff; border-color: var(--wrong); }
+.tag-note { font-size: 0.8rem; font-weight: 600; margin-left: auto; }

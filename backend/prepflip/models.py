@@ -1,6 +1,6 @@
 """Stored entities. Each one is a pydantic model kept as one document in the store.
 
-Further entities (ImportJob, Attempt, ...) are added by later milestones.
+Further entities (ImportJob, ...) are added by later milestones.
 """
 
 from datetime import datetime
@@ -107,4 +107,58 @@ class QuestionSet(OwnedDocument):
     source: SetSource
     questions: list[Question]
     created_at: datetime
+    updated_at: datetime
+
+
+# ---------- Attempts ----------
+
+
+class Response(BaseModel):
+    choice: int | None = None
+    marked: bool = False  # "mark for review" (exam mode)
+    visited: bool = False
+
+
+class Marking(BaseModel):
+    correct: int = 4
+    wrong: int = -1
+    skipped: int = 0
+
+
+Outcome = Literal["correct", "wrong", "skipped"]
+
+
+class QuestionOutcome(BaseModel):
+    question_id: str
+    choice: int | None
+    answer_index: int | None
+    outcome: Outcome
+
+
+class Result(BaseModel):
+    correct: int
+    wrong: int
+    skipped: int
+    # Only when a marking scheme is used (exam mode).
+    score: int | None = None
+    max_score: int | None = None
+    per_question: list[QuestionOutcome]
+
+
+class Attempt(OwnedDocument):
+    set_id: str
+    set_title: str
+    mode: Literal["practice", "exam"]
+    order_kind: Literal["original", "shuffle"]
+    # A copy of the questions, so editing the set later can't change this attempt or its result.
+    questions: list[Question]
+    # Question ids in the order they are asked.
+    order: list[str]
+    marking: Marking | None = None
+    started_at: datetime
+    deadline_at: datetime | None = None
+    status: Literal["in_progress", "submitted"]
+    responses: dict[str, Response] = {}
+    result: Result | None = None
+    submitted_at: datetime | None = None
     updated_at: datetime

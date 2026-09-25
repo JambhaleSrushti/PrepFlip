@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { api, ApiError } from '../api'
 import QuestionEditor from '../components/QuestionEditor'
+import StartPractice from '../components/StartPractice'
 import { timing } from '../timing'
 import type { IssueCode, Question, QuestionSet } from '../types'
 
@@ -31,11 +32,13 @@ export default function ReviewPage() {
   const [onlyFlagged, setOnlyFlagged] = useState(false)
   const [keyText, setKeyText] = useState('')
   const [keyMessage, setKeyMessage] = useState<string | null>(null)
+  const [startError, setStartError] = useState<string | null>(null)
 
   // Latest local copy, and a counter bumped on every edit. A save only replaces the local copy
   // with the server's (fresh flags) if nothing was edited while it was in flight.
   const latest = useRef<QuestionSet | null>(null)
   const version = useRef(0)
+  const savedVersion = useRef(0) // the last version the server has
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const pending = useRef(false) // an edit is waiting for the save timer
   // Saves run one after another, so an older save can never overwrite a newer one on the server.
@@ -57,11 +60,12 @@ export default function ReviewPage() {
     pending.current = false
     queue.current = queue.current.then(async () => {
       const snapshot = latest.current
-      if (!snapshot) return true
       const sent = version.current
+      if (!snapshot || sent === savedVersion.current) return true // nothing new to save
       setSaveState('saving')
       try {
         const saved = await api.saveSet(snapshot)
+        savedVersion.current = sent
         if (version.current === sent) {
           latest.current = saved
           setSet(saved)
@@ -166,6 +170,20 @@ export default function ReviewPage() {
     }
   }
 
+  async function startPractice(order: 'original' | 'shuffle') {
+    setStartError(null)
+    if (!(await saveNow())) {
+      setStartError("Couldn't save your changes. Check your connection and try again.")
+      return
+    }
+    try {
+      const attempt = await api.startAttempt({ set_id: id, mode: 'practice', order })
+      navigate(`/attempts/${attempt.id}`)
+    } catch (err) {
+      setStartError(err instanceof ApiError ? err.message : "Couldn't start. Please try again.")
+    }
+  }
+
   async function deleteSet() {
     if (!window.confirm(`Delete "${set!.title}"? This can't be undone.`)) return
     clearTimeout(timer.current)
@@ -232,7 +250,13 @@ export default function ReviewPage() {
       {set.questions.length === 0 && <p className="card center muted">No questions left in this set.</p>}
 
       <div className="card sticky-actions">
-        <div className="row">
+        {startError && (
+          <p className="error" role="alert">
+            {startError}
+          </p>
+        )}
+        <StartPractice ready={set.status === 'ready' && flagged.length === 0} onStart={startPractice} />
+        <div className="row delete-row">
           <button type="button" className="small danger" onClick={() => void deleteSet()}>
             Delete set
           </button>

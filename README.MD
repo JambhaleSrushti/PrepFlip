@@ -32,7 +32,8 @@ The first version is being built from [`DESIGN.md`](DESIGN.md): a **React** fron
 | M0 Repo skeleton | Done |
 | M1 Authentication | Done |
 | M2 Text import, review screen, saved sets | Done |
-| M3–M9 | Not started |
+| M3 Practice mode and results (Release 1 candidate) | Done |
+| M4–M9 | Not started |
 
 ## Development
 

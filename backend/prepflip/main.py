@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
-from prepflip.api import auth, health, imports, sets
+from prepflip.api import attempts, auth, health, imports, sets
 from prepflip.api.deps import current_user
 from prepflip.config import Settings
 from prepflip.services.auth import LoginRateLimiter, load_users
@@ -30,6 +30,7 @@ def create_app(settings: Settings | None = None, store: Store | None = None) -> 
     protected.include_router(health.router)
     protected.include_router(imports.router)
     protected.include_router(sets.router)
+    protected.include_router(attempts.router)
     api.include_router(protected)
     app.include_router(api)
 

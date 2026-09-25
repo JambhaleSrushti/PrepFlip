@@ -1,7 +1,7 @@
 // Thin wrapper around fetch for the JSON API. The session lives in an HttpOnly cookie,
 // so the browser sends it automatically and scripts never see it.
 
-import type { AnswerKeyResult, QuestionSet, SetSummary } from './types'
+import type { AnswerKeyResult, Attempt, AttemptSummary, QuestionResponse, QuestionSet, SetSummary } from './types'
 
 export type User = {
   id: string
@@ -68,4 +68,13 @@ export const api = {
     }),
   deleteSet: (id: string) => request<void>('DELETE', `/sets/${id}`),
   applyAnswerKey: (id: string, text: string) => request<AnswerKeyResult>('POST', `/sets/${id}/answer-key`, { text }),
+
+  startAttempt: (body: { set_id: string; mode: 'practice'; order: 'original' | 'shuffle' }) =>
+    request<Attempt>('POST', '/attempts', body),
+  listAttempts: (status?: 'in_progress' | 'submitted') =>
+    request<AttemptSummary[]>('GET', status ? `/attempts?status=${status}` : '/attempts'),
+  getAttempt: (id: string) => request<Attempt>('GET', `/attempts/${id}`),
+  saveResponses: (id: string, responses: Record<string, QuestionResponse>) =>
+    request<Attempt>('PUT', `/attempts/${id}/responses`, { responses }),
+  submitAttempt: (id: string) => request<Attempt>('POST', `/attempts/${id}/submit`),
 }

@@ -8,7 +8,7 @@ Data lives in this process only: run exactly one server process with one worker.
 import threading
 from typing import Any, Generic, TypeVar
 
-from prepflip.models import Document, QuestionSet, Session, User
+from prepflip.models import Attempt, Document, QuestionSet, Session, User
 
 T = TypeVar("T", bound=Document)
 
@@ -46,3 +46,4 @@ class InMemoryStore:
         self.users = InMemoryCollection(User)
         self.sessions = InMemoryCollection(Session)
         self.sets = InMemoryCollection(QuestionSet)
+        self.attempts = InMemoryCollection(Attempt)

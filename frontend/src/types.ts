@@ -73,3 +73,52 @@ export function questionLabel(q: Pick<Question, 'printed_number' | 'seq'>): stri
 export function optionLetter(index: number): string {
   return String.fromCharCode(65 + index)
 }
+
+export type QuestionResponse = {
+  choice: number | null
+  marked: boolean
+  visited: boolean
+}
+
+export type Outcome = 'correct' | 'wrong' | 'skipped'
+
+export type Result = {
+  correct: number
+  wrong: number
+  skipped: number
+  score: number | null
+  max_score: number | null
+  per_question: { question_id: string; choice: number | null; answer_index: number | null; outcome: Outcome }[]
+}
+
+export type Attempt = {
+  id: string
+  owner_id: string
+  set_id: string
+  set_title: string
+  mode: 'practice' | 'exam'
+  order_kind: 'original' | 'shuffle'
+  questions: Question[]
+  order: string[]
+  marking: { correct: number; wrong: number; skipped: number } | null
+  started_at: string
+  deadline_at: string | null
+  status: 'in_progress' | 'submitted'
+  responses: Record<string, QuestionResponse>
+  result: Result | null
+  submitted_at: string | null
+  updated_at: string
+}
+
+export type AttemptSummary = {
+  id: string
+  set_id: string
+  set_title: string
+  mode: 'practice' | 'exam'
+  status: 'in_progress' | 'submitted'
+  question_count: number
+  answered_count: number
+  correct: number | null
+  started_at: string
+  updated_at: string
+}

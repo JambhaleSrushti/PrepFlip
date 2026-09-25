@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App'
 import { AuthProvider } from '../auth'
 import { fakeApi, json } from '../test/fakeApi'
-import { ASHA, flaggedSet, SET_ID } from '../test/fixtures'
+import { ASHA, attempt, ATTEMPT_ID, flaggedSet, questionSet, SET_ID } from '../test/fixtures'
 import { timing } from '../timing'
 import type { QuestionSet } from '../types'
 
@@ -180,5 +180,43 @@ describe('review screen', () => {
     renderReview()
     const q1 = await screen.findByRole('article', { name: 'Q1' })
     await waitFor(() => expect(q1.querySelectorAll('.katex').length).toBe(2))
+  })
+
+  it('cannot start practising while questions are flagged', async () => {
+    fakeServer()
+    renderReview()
+    await screen.findByRole('article', { name: 'Q4' })
+    expect(screen.getByRole('button', { name: 'Start practising' })).toBeDisabled()
+    expect(screen.getByText('Fix or remove the flagged questions to start practising.')).toBeInTheDocument()
+  })
+
+  it('starts a shuffled practice session from a ready set', async () => {
+    const user = userEvent.setup()
+    fakeApi({
+      'GET /api/auth/me': () => json(ASHA),
+      [`GET ${SET_URL}`]: () => json(questionSet()),
+      'POST /api/attempts': (body) => {
+        expect(body).toEqual({ set_id: SET_ID, mode: 'practice', order: 'shuffle' })
+        return json(attempt(), 201)
+      },
+      [`GET /api/attempts/${ATTEMPT_ID}`]: () => json(attempt()),
+    })
+    renderReview()
+    await user.click(await screen.findByRole('radio', { name: 'Shuffle' }))
+    expect(screen.getByRole('radio', { name: /Exam/ })).toBeDisabled()
+    await user.click(screen.getByRole('button', { name: 'Start practising' }))
+    expect(await screen.findByText('Question 1 of 3')).toBeInTheDocument()
+  })
+
+  it('explains why a session could not start', async () => {
+    const user = userEvent.setup()
+    fakeApi({
+      'GET /api/auth/me': () => json(ASHA),
+      [`GET ${SET_URL}`]: () => json(questionSet()),
+      'POST /api/attempts': () => json({ detail: 'Some questions still need checking. Fix or remove the flagged questions first.' }, 409),
+    })
+    renderReview()
+    await user.click(await screen.findByRole('button', { name: 'Start practising' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Some questions still need checking')
   })
 })
