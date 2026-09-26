@@ -6,6 +6,7 @@
     "setup": "npm --prefix frontend install && uv sync --project backend",
     "build": "npm --prefix frontend run build",
     "start": "uv run --project backend prepflip-serve",
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File start.ps1",
     "dev:api": "uv run --project backend uvicorn prepflip.main:app --reload --port 8000",
     "dev:web": "npm --prefix frontend run dev",
     "test": "uv run --project backend pytest backend && npm --prefix frontend test",
