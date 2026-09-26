@@ -11,3 +11,7 @@ __pycache__/
 
 # Real accounts (password hashes). See backend/users.example.json.
 backend/users.json
+
+# Playwright output
+frontend/test-results/
+frontend/playwright-report/

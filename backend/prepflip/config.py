@@ -28,6 +28,8 @@ class Settings:
     login_max_failures: int = 5
     login_window_seconds: int = 15 * 60
     ai_enabled: bool = False
+    # Adds /api/test/* (e.g. simulating a server restart) for the Playwright tests. Never turn on in production.
+    test_endpoints: bool = False
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -37,4 +39,5 @@ class Settings:
             static_dir=Path(os.environ.get("PREPFLIP_STATIC_DIR", defaults.static_dir)),
             secure_cookies=_env_bool("PREPFLIP_SECURE_COOKIES", defaults.secure_cookies),
             session_ttl_hours=int(os.environ.get("PREPFLIP_SESSION_TTL_HOURS", defaults.session_ttl_hours)),
+            test_endpoints=_env_bool("PREPFLIP_TEST_ENDPOINTS", defaults.test_endpoints),
         )

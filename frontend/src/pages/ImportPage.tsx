@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { api, ApiError } from '../api'
+import { saveSetLocally } from '../localStore'
 
 export const SAMPLE_QUESTIONS = `1. Which organelle is known as the powerhouse of the cell?
 (A) Nucleus
@@ -39,6 +40,7 @@ export default function ImportPage() {
     setBusy(true)
     try {
       const set = await api.importText({ text, title: title.trim() || undefined, answer_key: answerKey.trim() || undefined })
+      saveSetLocally(set)
       navigate(`/sets/${set.id}`)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.')

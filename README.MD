@@ -33,7 +33,8 @@ The first version is being built from [`DESIGN.md`](DESIGN.md): a **React** fron
 | M1 Authentication | Done |
 | M2 Text import, review screen, saved sets | Done |
 | M3 Practice mode and results (Release 1 candidate) | Done |
-| M4–M9 | Not started |
+| M4 Browser saving, resume and restore | Done |
+| M5–M9 | Not started |
 
 ## Development
 
@@ -71,7 +72,12 @@ npm start          # serve it and the API on http://127.0.0.1:8000
 
 ```
 npm test           # backend (pytest) and front end (Vitest)
+npm run test:e2e   # end-to-end (Playwright): builds the app and serves it on port 8123
 ```
+
+The first time, install the browser for the end-to-end tests with `npx --prefix frontend playwright install chromium`. They log in with a throwaway account in `frontend/e2e/users.json` and use a test-only endpoint that simulates a server restart.
+
+**Where data lives:** the server's memory is the main copy, but it is lost on every restart. The browser keeps a copy of each set the student opens, every unfinished attempt (saved on each answer) and the last 20 results. When the app starts, or the student logs in again after a restart, anything the server is missing is sent back to it.
 
 ### Configuration
 
@@ -83,6 +89,7 @@ Environment variables read by the backend:
 | `PREPFLIP_STATIC_DIR` | `frontend/dist` | Built React app |
 | `PREPFLIP_SECURE_COOKIES` | `false` | Set to `true` behind HTTPS |
 | `PREPFLIP_SESSION_TTL_HOURS` | `168` | How long a login lasts |
+| `PREPFLIP_TEST_ENDPOINTS` | `false` | Adds `/api/test/restart` for the end-to-end tests. Never set in production. |
 
 ### Project layout
 

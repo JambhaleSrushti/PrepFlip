@@ -1,0 +1,10 @@
+{
+  "users": [
+    {
+      "id": "user-e2e",
+      "username": "e2e",
+      "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$7qQITACRgAcP8zB6W9dWLQ$vaC84Z8dgBm8RfZy4Aq2UjeVWQKDA55H+GQl02Aa/50",
+      "display_name": "E2E Student"
+    }
+  ]
+}

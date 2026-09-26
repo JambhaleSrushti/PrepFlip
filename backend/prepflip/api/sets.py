@@ -6,12 +6,10 @@ from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, Field, model_validator
 
 from prepflip.api.deps import CurrentUser, StoreDep, get_owned
-from prepflip.models import Question, QuestionSet, SetSource
+from prepflip.models import MAX_QUESTIONS, Question, QuestionSet, SetSource
 from prepflip.services import sets
 
 router = APIRouter(prefix="/sets", tags=["sets"])
-
-MAX_QUESTIONS = 500
 
 
 class SetIn(BaseModel):

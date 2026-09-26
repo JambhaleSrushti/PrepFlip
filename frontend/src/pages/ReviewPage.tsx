@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router'
 import { api, ApiError } from '../api'
 import QuestionEditor from '../components/QuestionEditor'
 import StartPractice from '../components/StartPractice'
+import { removeSetLocally, saveAttemptLocally, saveSetLocally } from '../localStore'
 import { timing } from '../timing'
 import type { IssueCode, Question, QuestionSet } from '../types'
 
@@ -49,6 +50,7 @@ export default function ReviewPage() {
     api
       .getSet(id)
       .then((s) => {
+        saveSetLocally(s)
         latest.current = s
         setSet(s)
       })
@@ -65,6 +67,7 @@ export default function ReviewPage() {
       setSaveState('saving')
       try {
         const saved = await api.saveSet(snapshot)
+        saveSetLocally(saved)
         savedVersion.current = sent
         if (version.current === sent) {
           latest.current = saved
@@ -161,6 +164,7 @@ export default function ReviewPage() {
     if (!(await saveNow())) return
     try {
       const result = await api.applyAnswerKey(id, keyText)
+      saveSetLocally(result.set)
       latest.current = result.set
       setSet(result.set)
       setKeyMessage(keyResultMessage(result))
@@ -178,6 +182,7 @@ export default function ReviewPage() {
     }
     try {
       const attempt = await api.startAttempt({ set_id: id, mode: 'practice', order })
+      saveAttemptLocally(attempt)
       navigate(`/attempts/${attempt.id}`)
     } catch (err) {
       setStartError(err instanceof ApiError ? err.message : "Couldn't start. Please try again.")
@@ -190,6 +195,7 @@ export default function ReviewPage() {
     pending.current = false
     await queue.current // let any save in flight finish first, so it can't re-create the set
     await api.deleteSet(id)
+    removeSetLocally(set!.owner_id, id)
     navigate('/')
   }
 

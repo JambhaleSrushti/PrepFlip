@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { api, ApiError } from '../api'
 import MathText from '../components/MathText'
+import { saveAttemptLocally } from '../localStore'
 import { optionLetter, type Attempt, type Outcome } from '../types'
 
 type Filter = 'all' | Outcome
@@ -17,7 +18,10 @@ export default function ResultPage() {
   useEffect(() => {
     api
       .getAttempt(id)
-      .then(setAttempt)
+      .then((a) => {
+        if (a.status === 'submitted') saveAttemptLocally(a)
+        setAttempt(a)
+      })
       .catch((err) => setError(err instanceof ApiError && err.status === 404 ? 'This result was not found.' : "Couldn't load this result."))
   }, [id])
 

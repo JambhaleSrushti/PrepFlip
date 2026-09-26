@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Literal
 from uuid import UUID
 
@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from prepflip.api.deps import CurrentUser, StoreDep, get_owned
-from prepflip.models import Attempt, Response
+from prepflip.models import MAX_QUESTIONS, Attempt, Question, Response
 from prepflip.services import attempts
 from prepflip.services.attempts import AttemptError
 
@@ -25,6 +25,21 @@ class AttemptIn(BaseModel):
 
 class ResponsesIn(BaseModel):
     responses: dict[str, Response] = Field(max_length=1000)
+
+
+class AttemptCopyIn(BaseModel):
+    """The browser's copy of an attempt, sent back to restore it. Its result, if any, is ignored and re-scored."""
+
+    set_id: UUID
+    set_title: str = Field(min_length=1, max_length=200)
+    mode: Literal["practice", "exam"]
+    order_kind: Literal["original", "shuffle"]
+    questions: list[Question] = Field(max_length=MAX_QUESTIONS)
+    order: list[str] = Field(max_length=MAX_QUESTIONS)
+    started_at: datetime
+    status: Literal["in_progress", "submitted"]
+    responses: dict[str, Response] = Field(default={}, max_length=MAX_QUESTIONS)
+    submitted_at: datetime | None = None
 
 
 class AttemptSummary(BaseModel):
@@ -78,6 +93,20 @@ def list_attempts(
 @router.get("/{attempt_id}")
 def get_attempt(attempt_id: UUID, user: CurrentUser, store: StoreDep) -> Attempt:
     return get_owned(store.attempts, str(attempt_id), user)
+
+
+@router.put("/{attempt_id}")
+def put_attempt(attempt_id: UUID, body: AttemptCopyIn, user: CurrentUser, store: StoreDep) -> Attempt:
+    """Create or update an attempt from the browser's copy, e.g. after a server restart. Safe to repeat."""
+    existing = store.attempts.get(str(attempt_id))
+    if existing is not None and existing.owner_id != user.id:
+        raise HTTPException(status_code=404, detail="Not found")
+    copy = Attempt(**body.model_dump(mode="json"), id=str(attempt_id), owner_id=user.id, updated_at=datetime.now(UTC))
+    try:
+        attempt = attempts.restore_attempt(copy, existing)
+    except AttemptError as err:
+        raise _fail(err) from err
+    return store.attempts.put(attempt)
 
 
 @router.put("/{attempt_id}/responses")

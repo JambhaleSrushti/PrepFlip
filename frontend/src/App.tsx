@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router'
 import { useAuth } from './auth'
 import Layout from './components/Layout'
+import { hasLocalWork } from './localStore'
+import { restoreLocalWork } from './restore'
 import HomePage from './pages/HomePage'
 import ImportPage from './pages/ImportPage'
 import LoginPage from './pages/LoginPage'
@@ -21,6 +24,28 @@ function RequireAuth() {
   }
   if (user === null) {
     return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
+  }
+  return <RestoreLocalWork userId={user.id} />
+}
+
+/** Gives the server back this device's saved work (e.g. after a restart) before showing any page. */
+function RestoreLocalWork({ userId }: { userId: string }) {
+  const [done, setDone] = useState(() => !hasLocalWork(userId))
+  useEffect(() => {
+    let live = true
+    restoreLocalWork(userId)
+      .catch((err) => console.warn("Couldn't restore saved work.", err))
+      .finally(() => live && setDone(true))
+    return () => {
+      live = false
+    }
+  }, [userId])
+  if (!done) {
+    return (
+      <p className="muted center" role="status">
+        Loading your saved work…
+      </p>
+    )
   }
   return <Layout />
 }

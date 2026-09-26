@@ -74,6 +74,20 @@ export const api = {
   listAttempts: (status?: 'in_progress' | 'submitted') =>
     request<AttemptSummary[]>('GET', status ? `/attempts?status=${status}` : '/attempts'),
   getAttempt: (id: string) => request<Attempt>('GET', `/attempts/${id}`),
+  /** Create or update from the browser's copy (after a server restart). The server re-scores any result. */
+  restoreAttempt: (a: Attempt) =>
+    request<Attempt>('PUT', `/attempts/${a.id}`, {
+      set_id: a.set_id,
+      set_title: a.set_title,
+      mode: a.mode,
+      order_kind: a.order_kind,
+      questions: a.questions,
+      order: a.order,
+      started_at: a.started_at,
+      status: a.status,
+      responses: a.responses,
+      submitted_at: a.submitted_at,
+    }),
   saveResponses: (id: string, responses: Record<string, QuestionResponse>) =>
     request<Attempt>('PUT', `/attempts/${id}/responses`, { responses }),
   submitAttempt: (id: string) => request<Attempt>('POST', `/attempts/${id}/submit`),

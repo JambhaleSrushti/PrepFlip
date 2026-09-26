@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router'
 import { api, ApiError } from '../api'
 import MathText from '../components/MathText'
+import { saveAttemptLocally } from '../localStore'
 import { timing } from '../timing'
 import { optionLetter, questionLabel, type Attempt, type Question, type QuestionResponse } from '../types'
 
@@ -26,7 +27,8 @@ export default function QuizPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  // Answers are shown straight away and sent to the server every couple of seconds.
+  // Answers are shown and saved on this device straight away, and sent to the server every couple of seconds.
+  const loaded = useRef<Attempt | null>(null)
   const latest = useRef<Record<string, QuestionResponse>>({})
   const dirty = useRef(false)
   const queue = useRef<Promise<boolean>>(Promise.resolve(true))
@@ -35,6 +37,8 @@ export default function QuizPage() {
     api
       .getAttempt(id)
       .then((a) => {
+        saveAttemptLocally(a)
+        loaded.current = a
         latest.current = a.responses
         setResponses(a.responses)
         // Resume at the first question without an answer.
@@ -72,6 +76,7 @@ export default function QuizPage() {
 
   const update = useCallback((qid: string, patch: Partial<QuestionResponse>) => {
     latest.current = { ...latest.current, [qid]: { ...EMPTY, ...latest.current[qid], ...patch } }
+    if (loaded.current) saveAttemptLocally({ ...loaded.current, responses: latest.current })
     dirty.current = true
     setResponses(latest.current)
     setSyncState((s) => (s === 'error' ? s : 'pending'))
@@ -139,7 +144,7 @@ export default function QuizPage() {
       return
     }
     try {
-      await api.submitAttempt(id)
+      saveAttemptLocally(await api.submitAttempt(id))
       navigate(`/attempts/${id}/result`)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn't submit. Please try again.")
@@ -238,7 +243,7 @@ export default function QuizPage() {
       <p className="muted sync-state" role="status">
         {syncState === 'saved' && 'Answers saved'}
         {syncState === 'pending' && 'Saving answers…'}
-        {syncState === 'error' && "Answers not saved yet. We'll keep trying."}
+        {syncState === 'error' && "Answers saved on this device. Can't reach the server yet; we'll keep trying."}
       </p>
     </div>
   )

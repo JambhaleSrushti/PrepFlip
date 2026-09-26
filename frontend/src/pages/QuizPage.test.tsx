@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App'
 import { AuthProvider } from '../auth'
+import { localAttempts } from '../localStore'
 import { fakeApi, json } from '../test/fakeApi'
 import { ASHA, attempt, ATTEMPT_ID, submittedAttempt } from '../test/fixtures'
 import { timing } from '../timing'
@@ -110,6 +111,22 @@ describe('practice mode', () => {
     await user.click(within(palette).getByRole('button', { name: 'Question 1, correct' }))
     expect(screen.getByText('Question 1 of 3')).toBeInTheDocument()
     expect(within(palette).getByRole('button', { name: 'Question 3, not answered' })).toBeInTheDocument()
+  })
+
+  it('saves each answer on this device straight away, and the result after submitting', async () => {
+    timing.responseSyncMs = 60_000 // the server sync won't run during this test
+    const server = fakeServer()
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    const user = userEvent.setup()
+    renderAt(`/attempts/${ATTEMPT_ID}`)
+    await user.click(await screen.findByRole('button', { name: /Mitochondria/ }))
+
+    expect(server.saved).toEqual([])
+    expect(localAttempts(ASHA.id)[0].responses.q1).toEqual({ choice: 1, marked: false, visited: true })
+
+    await user.click(screen.getByRole('button', { name: 'Submit' }))
+    await screen.findByRole('heading', { name: 'Result: Biology mock 1' })
+    expect(localAttempts(ASHA.id)[0].status).toBe('submitted')
   })
 
   it('resumes at the first unanswered question', async () => {

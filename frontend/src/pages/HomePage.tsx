@@ -103,7 +103,7 @@ export default function HomePage() {
           </ul>
         </section>
       )}
-      <p className="muted center storage-note">Server storage is temporary during the pilot.</p>
+      <p className="muted center storage-note">Saved on this device. Server storage is temporary during the pilot.</p>
     </>
   )
 }

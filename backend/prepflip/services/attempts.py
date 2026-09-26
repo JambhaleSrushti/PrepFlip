@@ -75,16 +75,21 @@ def create_attempt(
     )
 
 
-def save_responses(attempt: Attempt, responses: dict[str, Response]) -> Attempt:
-    """Replace the attempt's responses with the full set sent by the browser. Safe to repeat."""
-    if attempt.status == "submitted":
-        raise AttemptError(409, "This attempt has already been submitted.")
-    options = {q.id: len(q.options) for q in attempt.questions}
+def _check_responses(questions: list[Question], responses: dict[str, Response]) -> None:
+    options = {q.id: len(q.options) for q in questions}
     for qid, response in responses.items():
         if qid not in options:
             raise AttemptError(422, f"Question {qid} is not in this attempt.")
         if response.choice is not None and not 0 <= response.choice < options[qid]:
             raise AttemptError(422, f"Question {qid}: that option doesn't exist.")
+
+
+def save_responses(attempt: Attempt, responses: dict[str, Response]) -> Attempt:
+    """Replace the attempt's responses with the full set sent by the browser. Safe to repeat."""
+    if attempt.status == "submitted":
+        raise AttemptError(409, "This attempt has already been submitted.")
+    _check_responses(attempt.questions, responses)
+    for qid, response in responses.items():
         if attempt.mode == "practice":
             before = attempt.responses.get(qid)
             if before and before.choice is not None and response.choice != before.choice:
@@ -117,7 +122,7 @@ def score(questions: list[Question], responses: dict[str, Response], marking: Ma
     return result
 
 
-def submit(attempt: Attempt) -> Attempt:
+def submit(attempt: Attempt, submitted_at: datetime | None = None) -> Attempt:
     """Score and close the attempt. Submitting again returns the same result."""
     if attempt.status == "submitted":
         return attempt
@@ -128,6 +133,58 @@ def submit(attempt: Attempt) -> Attempt:
     return attempt.model_copy(update={
         "status": "submitted",
         "result": score(asked, attempt.responses, attempt.marking),
-        "submitted_at": now,
+        "submitted_at": submitted_at or now,
         "updated_at": now,
     })
+
+
+def merge_responses(attempt: Attempt, incoming: dict[str, Response]) -> dict[str, Response]:
+    """Combine the server's responses with a browser's copy, which may be a little ahead or behind.
+
+    In practice mode the first answer counts, so an answer the server already has always wins.
+    """
+    merged = dict(attempt.responses)
+    for qid, theirs in incoming.items():
+        ours = merged.get(qid)
+        if ours is None:
+            merged[qid] = theirs
+            continue
+        choice = ours.choice if ours.choice is not None else theirs.choice
+        merged[qid] = Response(choice=choice, marked=theirs.marked, visited=ours.visited or theirs.visited)
+    return merged
+
+
+def restore_attempt(copy: Attempt, existing: Attempt | None) -> Attempt:
+    """Create or update an attempt from the browser's copy (e.g. after a server restart). Safe to repeat.
+
+    The browser can't forge a result: a submitted copy is scored again here. If the server
+    already has the attempt, its questions and order are kept and only new answers are added.
+    """
+    if copy.mode == "exam":
+        raise AttemptError(422, "Exam mode is coming soon. Use practice mode for now.")
+    if existing is not None:
+        if existing.status == "submitted":
+            return existing
+        _check_responses(existing.questions, copy.responses)
+        attempt = existing.model_copy(update={
+            "responses": merge_responses(existing, copy.responses), "updated_at": datetime.now(UTC),
+        })
+        return submit(attempt, copy.submitted_at) if copy.status == "submitted" else attempt
+
+    ids = [q.id for q in copy.questions]
+    if not ids or len(ids) != len(set(ids)):
+        raise AttemptError(422, "An attempt needs questions with unique ids.")
+    if sorted(copy.order) != sorted(ids):
+        raise AttemptError(422, "The question order must list every question exactly once.")
+    for q in copy.questions:
+        if q.answer_index is not None and not 0 <= q.answer_index < len(q.options):
+            raise AttemptError(422, f"Question {q.id}: answer_index is not one of its options.")
+    _check_responses(copy.questions, copy.responses)
+    attempt = copy.model_copy(update={
+        "questions": [_snapshot(q) for q in copy.questions],
+        "status": "in_progress",
+        "result": None,
+        "submitted_at": None,
+        "updated_at": datetime.now(UTC),
+    })
+    return submit(attempt, copy.submitted_at) if copy.status == "submitted" else attempt

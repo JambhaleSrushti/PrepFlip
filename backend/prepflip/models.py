@@ -60,6 +60,7 @@ ExtractionFlagCode = Literal["NEEDS_FIGURE", "AI_UNCERTAIN", "ANSWER_NO_EVIDENCE
 AnswerSource = Literal["paper_inline", "paper_key", "student"]
 
 MAX_OPTIONS = 10
+MAX_QUESTIONS = 500  # per set or attempt
 
 
 class Issue(BaseModel):

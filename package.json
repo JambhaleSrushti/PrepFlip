@@ -10,6 +10,7 @@
     "dev:api": "uv run --project backend uvicorn prepflip.main:app --reload --port 8000",
     "dev:web": "npm --prefix frontend run dev",
     "test": "uv run --project backend pytest backend && npm --prefix frontend test",
+    "test:e2e": "npm --prefix frontend run test:e2e",
     "hash-password": "uv run --project backend prepflip-hash-password"
   }
 }
